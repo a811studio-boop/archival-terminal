@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Enter Archive</title>
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<style>
+body {
+  background:#0b0b0b;
+  color:#e6e6e6;
+  font-family: monospace;
+  padding:40px;
+  text-align:center;
+}
+button {
+  padding:12px 24px;
+  border:1px solid #9cff9c;
+  background:none;
+  color:#9cff9c;
+  font-family:inherit;
+  cursor:pointer;
+  margin:10px;
+}
+#status {
+  margin-top:20px;
+  color:#9be37a;
+}
+</style>
+</head>
+<body>
+
+<h2>ENTER ARCHIVE</h2>
+
+<button id="connect">CONNECT WALLET</button><br/>
+<button id="enter" disabled>ENTER ARCHIVE</button>
+
+<div id="status"></div>
+
+<script>
+const CONTRACT_ADDRESS = "0x9E7E82408780E1431ae2B2351669D59AEb26C7F5";
+const ABI = [
+  "function enterArchive() payable",
+  "function entryPrice() view returns (uint256)"
+];
+
+let provider, signer, contract;
+
+document.getElementById("connect").onclick = async () => {
+  if (!window.ethereum) {
+    alert("MetaMask not found");
+    return;
+  }
+  provider = new ethers.providers.Web3Provider(window.ethereum);
+  await provider.send("eth_requestAccounts", []);
+  signer = provider.getSigner();
+  contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+  const price = await contract.entryPrice();
+  document.getElementById("status").innerText =
+    "Connected. Entry price: " + ethers.utils.formatEther(price) + " ETH";
+  document.getElementById("enter").disabled = false;
+};
+
+document.getElementById("enter").onclick = async () => {
+  try {
+    const price = await contract.entryPrice();
+    const tx = await contract.enterArchive({ value: price });
+    document.getElementById("status").innerText = "Transaction sent…";
+    await tx.wait();
+    document.getElementById("status").innerText = "Entry recorded.";
+  } catch (e) {
+    document.getElementById("status").innerText = "Transaction failed.";
+  }
+};
+</script>
+
+</body>
+</html>

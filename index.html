@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>The Last Website Before AI Takes Over</title>
+
+<style>
+  body {
+    background:#0b0b0b;
+    color:#e6e6e6;
+    font-family: monospace;
+    padding:40px;
+  }
+  h1, h2 {
+    font-weight: normal;
+    letter-spacing: 1px;
+  }
+  .terminal {
+    max-width: 960px;
+    margin:auto;
+    border:1px solid #222;
+    padding:32px;
+    background:#050505;
+  }
+  .muted {
+    color:#777;
+    font-size:14px;
+  }
+  table {
+    width:100%;
+    border-collapse: collapse;
+    margin-top:32px;
+  }
+  th, td {
+    border:1px solid #222;
+    padding:10px;
+    text-align:left;
+  }
+  th {
+    background:#111;
+  }
+  tr:hover td {
+    background:#0f0f0f;
+  }
+  .highlight {
+    color:#9be37a;
+  }
+  .footer {
+    margin-top:40px;
+    font-size:13px;
+    color:#666;
+  }
+
+.sold-out td {
+  color: #555;
+  text-decoration: line-through;
+}
+
+
+a.disabled {
+  opacity: 0.4;
+  pointer-events: none;
+  border-color: #555 !important;
+  color: #555 !important;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="terminal">
+
+<h1>THE LAST WEBSITE<br/>BEFORE AI TAKES OVER</h1>
+
+<p class="muted">
+This is not a game.<br/>
+This is not an investment.<br/>
+This is an archive.
+</p>
+
+<p>
+10000 immutable archival entries will be written.<br/>
+Each entry records a name, a line, and a link — permanently.
+</p>
+
+<p>
+When the archive is complete, the protocol finalizes automatically.
+</p>
+
+<hr/>
+
+<h2>ARCHIVE PHASES</h2>
+
+<p id="archive-progress" class="muted" style="margin-top:12px;">
+Archive completion: —
+</p>
+
+
+<table>
+<thead>
+<tr>
+  <th>Phase</th>
+  <th>Entries</th>
+  <th>Price</th>
+  <th>Phase Total</th>
+</tr>
+</thead>
+<tbody>
+
+<tr><td>GENESIS</td><td></td><td>$15</td><td>$30,000</td></tr>
+<tr><td>EARLY</td><td></td><td>$30</td><td>$54,000</td></tr>
+<tr><td>SIGNAL</td><td></td><td>$75</td><td>$112,500</td></tr>
+<tr><td>EXPANSION</td><td></td><td>$150</td><td>$180,000</td></tr>
+<tr><td>GROWTH</td><td></td><td>$300</td><td>$270,000</td></tr>
+<tr><td>MATURITY</td><td></td><td>$600</td><td>$420,000</td></tr>
+<tr><td>THRESHOLD</td><td></td><td>$900</td><td>$450,000</td></tr>
+<tr><td>CONSENSUS</td><td></td><td>$1200</td><td>$480,000</td></tr>
+
+<tr class="highlight"><td>ARCHIVE</td><td></td><td>$1525</td><td>$457,500</td></tr>
+<tr class="highlight"><td>TERMINAL</td><td></td><td>$1525</td><td>$457,500</td></tr>
+<tr class="highlight"><td>OMEGA</td><td></td><td>$1525</td><td>$659,800</td></tr>
+
+<tr>
+  <th>TOTAL</th>
+  <th>10,000</th>
+  <th>—</th>
+  <th>≈ $2,000,300</th>
+</tr>
+
+</tbody>
+</table>
+
+<p class="muted">
+Final total is capped by protocol design.
+</p>
+
+<hr/>
+
+<h2>ARCHIVE FINALIZATION</h2>
+
+<p>
+Once all 10,000 entries are recorded:
+</p>
+
+<ul>
+  <li>The archive becomes immutable</li>
+  <li>A single archival address is selected automatically</li>
+  <li>Selection probability is influenced by archive phase weight</li>
+</ul>
+
+<p class="muted">
+Later archive phases carry increased archival weight.<br/>
+This reflects historical significance — not financial promise.
+</p>
+
+<hr/>
+
+<h2>DISTRIBUTION MODEL</h2>
+
+<ul>
+  <li>50% of protocol balance → archival address</li>
+  <li>50% of protocol balance → author address</li>
+</ul>
+
+<div class="footer">
+Protocol archive • immutable record • Base network
+</div>
+
+</div>
+
+<div style="margin-top:40px; text-align:center;">
+  <a href="enter.html"
+     style="
+       display:inline-block;
+       padding:12px 24px;
+       border:1px solid #9cff9c;
+       color:#9cff9c;
+       text-decoration:none;
+       font-family:inherit;
+       letter-spacing:1px;
+     ">
+    ENTER ARCHIVE
+  </a>
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/ethers@5.7.2/dist/ethers.umd.min.js"></script>
+<script>
+/*
+  CANON SAFE SCRIPT
+  Touches ONLY the Entries column + row class
+*/
+
+const CONTRACT_ADDRESS = "0x9E7E82408780E1431ae2B2351669D59AEb26C7F5";
+const ABI = [
+  "function participantsCount() view returns (uint256)"
+];
+
+const PHASE_LIMITS = {
+  GENESIS: 1500,
+  EARLY: 1500,
+  SIGNAL: 1500,
+  EXPANSION: 1300,
+  GROWTH: 1100,
+  MATURITY: 900,
+  THRESHOLD: 700,
+  CONSENSUS: 600,
+  ARCHIVE: 500,
+  TERMINAL: 300,
+  OMEGA: 100
+};
+
+function computeSoldPerPhase(total) {
+  const result = {};
+  let remaining = total;
+
+  for (const phase in PHASE_LIMITS) {
+    const cap = PHASE_LIMITS[phase];
+    const sold = Math.min(cap, remaining);
+    result[phase] = sold;
+    remaining -= sold;
+  }
+  return result;
+}
+
+function renderEntries(soldPerPhase) {
+  const rows = document.querySelectorAll("table tbody tr");
+  let activeFound = false;
+
+  rows.forEach(row => {
+    row.classList.remove("active-phase");
+
+    const phaseCell = row.children[0];
+    const entriesCell = row.children[1];
+    if (!phaseCell || !entriesCell) return;
+
+    const phase = phaseCell.textContent.trim();
+    if (!(phase in PHASE_LIMITS)) return;
+
+    const sold = soldPerPhase[phase] || 0;
+    const limit = PHASE_LIMITS[phase];
+    const left = limit - sold;
+
+    entriesCell.textContent = `Sold ${sold} / Left ${left}`;
+
+    if (left === 0) {
+      row.classList.add("sold-out");
+    }
+
+    if (!activeFound && left > 0) {
+      row.classList.add("active-phase");
+      activeFound = true;
+    }
+  });
+}
+
+async function syncFromChain() {
+  const provider = new ethers.providers.JsonRpcProvider("https://mainnet.base.org");
+  const contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, provider);
+  const totalSold = (await contract.participantsCount()).toNumber();
+
+  const soldPerPhase = computeSoldPerPhase(totalSold);
+  renderEntries(soldPerPhase);
+
+  // update archive completion %
+  const totalCapacity = Object.values(PHASE_LIMITS).reduce((a,b)=>a+b,0);
+  const percent = total > 0 ? Math.min(100, (total / totalCapacity) * 100) : 0;
+  const progressEl = document.getElementById("archive-progress");
+  if (progressEl) {
+    progressEl.textContent = `Archive completion: ${percent.toFixed(2)}% (${total} / ${totalCapacity})`;
+  }
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  syncFromChain();
+  setInterval(syncFromChain, 15000);
+});
+</script>
+
+
+
+<script>
+/*
+  CANON SAFE SCRIPT
+  Updates ONLY the "Entries" column using contract data
+*/
+
+const PHASE_LIMITS = {
+  GENESIS: 2000,
+  EARLY: 1800,
+  SIGNAL: 1500,
+  EXPANSION: 1200,
+  GROWTH: 900,
+  MATURITY: 700,
+  THRESHOLD: 500,
+  CONSENSUS: 400,
+  ARCHIVE: 300,
+  TERMINAL: 300,
+  OMEGA: 432
+};
+
+// DEMO fallback (used until contract sync is live)
+let SOLD = {
+  GENESIS: 0,
+  EARLY: 0,
+  SIGNAL: 0,
+  EXPANSION: 0,
+  GROWTH: 0,
+  MATURITY: 0,
+  THRESHOLD: 0,
+  CONSENSUS: 0,
+  ARCHIVE: 0,
+  TERMINAL: 0,
+  OMEGA: 0
+};
+
+function updateEntriesColumn() {
+  const rows = document.querySelectorAll("table tbody tr");
+
+  rows.forEach(row => {
+    const phaseCell = row.children[0];
+    const entriesCell = row.children[1];
+    if (!phaseCell || !entriesCell) return;
+
+    const phase = phaseCell.textContent.trim();
+    if (!(phase in PHASE_LIMITS)) return;
+
+    const sold = SOLD[phase] || 0;
+    const total = PHASE_LIMITS[phase];
+    const left = total - sold;
+
+    entriesCell.textContent = `Sold ${sold} / Left ${left}`;
+  });
+}
+
+document.addEventListener("DOMContentLoaded", updateEntriesColumn);
+</script>
+
+</body>
+</html>
